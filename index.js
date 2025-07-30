@@ -33,7 +33,7 @@ login({ appState: appstate, selfListen: false, autoMarkRead: true, forceLogin: t
 
   console.log("✅ Bot chal raha hai, gali dene ko ready...");
 
-  const filePath = "./comment.txt";
+  const filePath = "./message.txt"; // <- yeh line badli gayi hai
   const threadFile = "./thread.txt";
   let lastContent = "";
 
@@ -42,7 +42,7 @@ login({ appState: appstate, selfListen: false, autoMarkRead: true, forceLogin: t
   }
 
   async function checkAndGali() {
-    if (!isInsulting) return; // 🔐 Only when started
+    if (!isInsulting) return;
 
     if (!fs.existsSync(filePath) || !fs.existsSync(threadFile)) return;
 
@@ -50,30 +50,22 @@ login({ appState: appstate, selfListen: false, autoMarkRead: true, forceLogin: t
     const threads = fs.readFileSync(threadFile, "utf-8").split("\n").map(t => t.trim()).filter(t => t);
 
     if (content && content !== lastContent) {
-      const regex = /(.*)\s*\((.*?)\)/;
-      const match = content.match(regex);
+      const message = {
+        body: content,
+        mentions: [{ tag: "CHUTIYA", id: ADMIN_UID }]
+      };
 
-      if (match) {
-        const name = match[1].trim();
-        const uid = match[2].trim();
+      console.log(`⌛ 35 second ruk raha hu fir message bhejunga`);
+      await delay(35000);
 
-        const message = {
-          body: `Abey ${name}, dimag thikane laga le chomu! 🤡`,
-          mentions: [{ tag: name, id: uid }]
-        };
-
-        console.log(`⌛ 35 second ruk raha hu fir gali dunga -> ${name}`);
-        await delay(35000);
-
-        threads.forEach(threadID => {
-          api.sendMessage(message, threadID, (err) => {
-            if (err) console.error("❌ Gali nahi gayi:", err);
-            else console.log(`✅ Gali de di -> ${name} in ${threadID}`);
-          });
+      threads.forEach(threadID => {
+        api.sendMessage(message, threadID, (err) => {
+          if (err) console.error("❌ Message nahi gaya:", err);
+          else console.log(`✅ Message gaya -> ${threadID}`);
         });
+      });
 
-        lastContent = content;
-      }
+      lastContent = content;
     }
   }
 
