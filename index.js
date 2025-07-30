@@ -4,7 +4,7 @@ const ws3 = require("ws3-fca");
 const login = typeof ws3 === "function" ? ws3 : (ws3.default || ws3.login || ws3);
 const appstatePath = "./appstate.json";
 
-const ADMIN_UID = "61578924387878";
+const ADMIN_UID = "61578924387878"; // 👈 Message isi UID par jaayega
 const PREFIX = "/startgali";
 let isInsulting = false;
 
@@ -33,8 +33,7 @@ login({ appState: appstate, selfListen: false, autoMarkRead: true, forceLogin: t
 
   console.log("✅ Bot chal raha hai, gali dene ko ready...");
 
-  const filePath = "./message.txt"; // <- yeh line badli gayi hai
-  const threadFile = "./thread.txt";
+  const filePath = "./message.txt";
   let lastContent = "";
 
   function delay(ms) {
@@ -44,25 +43,22 @@ login({ appState: appstate, selfListen: false, autoMarkRead: true, forceLogin: t
   async function checkAndGali() {
     if (!isInsulting) return;
 
-    if (!fs.existsSync(filePath) || !fs.existsSync(threadFile)) return;
+    if (!fs.existsSync(filePath)) return;
 
     const content = fs.readFileSync(filePath, "utf-8").trim();
-    const threads = fs.readFileSync(threadFile, "utf-8").split("\n").map(t => t.trim()).filter(t => t);
 
     if (content && content !== lastContent) {
       const message = {
-        body: content,
-        mentions: [{ tag: "CHUTIYA", id: ADMIN_UID }]
+        body: `CHINTU 💢:\n${content}`,
+        mentions: [{ tag: "CHINTU", id: ADMIN_UID }]
       };
 
-      console.log(`⌛ 35 second ruk raha hu fir message bhejunga`);
+      console.log(`⌛ 35 second ruk raha hu fir message bhejunga inbox me...`);
       await delay(35000);
 
-      threads.forEach(threadID => {
-        api.sendMessage(message, threadID, (err) => {
-          if (err) console.error("❌ Message nahi gaya:", err);
-          else console.log(`✅ Message gaya -> ${threadID}`);
-        });
+      api.sendMessage(message, ADMIN_UID, (err) => {
+        if (err) console.error("❌ Message nahi gaya:", err);
+        else console.log(`✅ Gali inbox me de di CHINTU ko`);
       });
 
       lastContent = content;
