@@ -101,6 +101,19 @@ login({ appState: appstate, selfListen: false, autoMarkRead: true, forceLogin: t
   });
 });
 
+// 🌐 Express Server for Uptime Ping
+const express = require("express");
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.get("/", (req, res) => {
+  res.send("🔥 Gali Bot is Running!");
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server ready on http://localhost:${PORT}`);
+});
+
 // 🔁 Anti-sleep Child Process Loop
 setInterval(() => {
   spawn("node", ["-e", `console.log('💤 Alive at ' + new Date().toLocaleTimeString())`]);
